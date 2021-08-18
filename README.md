@@ -1,19 +1,32 @@
 # single-gpu-passthrough
 
+### Use scripts
+
+```sh
+git clone git@github.com:Gnarus-G/single-gpu-passthrough.git
+cd single-gpu-passthrough;
+chmod +x kvmconf vbiospatch;
+chmod -R +x hookscripts;
+```
+
 ### IOMMU (AMD)
+
 ```bash
 sudo vim /etc/default/grub
 ```
+
 Add 'amd_iommu' like so - `GRUB_CMDLINE_LINUX_DEFAULT="... amd_iommu=on ..."`
 
 ### Hook Manager
- ```bash
+
+```bash
 sudo wget 'https://raw.githubusercontent.com/PassthroughPOST/VFIO-Tools/master/libvirt_hooks/qemu' \
-     -O /etc/libvirt/hooks/qemu
+    -O /etc/libvirt/hooks/qemu
 sudo chmod +x /etc/libvirt/hooks/qemu
- ```
+```
 
 ### Hyper-V Elightenments
+
 ```conf
 <vpindex state="on"/>
 <synic state="on"/>
@@ -27,6 +40,7 @@ sudo chmod +x /etc/libvirt/hooks/qemu
 ```
 
 ### Enabling SMT Performance (for AMD Ryzen CPUs)
+
 ```conf
 <feature policy="require" name="topoext"/>
 ```

@@ -1,0 +1,18 @@
+#!/bin/bash
+lspci -nnk | grep VGA
+
+id=$(lspci -nnk | grep VGA | grep -oP '(\d+:\d+\.\d)');
+
+echo $id
+
+read -p "Enter the filename (to save as): " fname
+
+DEVICE_ROM=/sys/bus/pci/devices/0000:$id/rom
+FILE_NAME=~/.local/share/vgabios/$fname.rom
+
+echo ...getting rom from $DEVICE_ROM
+echo ...to save as $FILE_NAME
+
+echo 1 | sudo tee $DEVICE_ROM
+sudo cat $DEVICE_ROM > $FILE_NAME
+echo 0 | sudo tee $DEVICE_ROM
