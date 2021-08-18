@@ -25,6 +25,12 @@ sudo wget 'https://raw.githubusercontent.com/PassthroughPOST/VFIO-Tools/master/l
 sudo chmod +x /etc/libvirt/hooks/qemu
 ```
 
+### Place Hook scripts
+
+```bash
+cp -r hookscripts/ /etc/libvirt/hooks/qemu.d
+```
+
 ### Hyper-V Elightenments
 
 ```conf
