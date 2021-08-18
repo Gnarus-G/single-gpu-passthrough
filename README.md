@@ -47,6 +47,9 @@ cp -r hookscripts/ /etc/libvirt/hooks/qemu.d
 <reset state="on"/>
 <vendor_id state="on" value="whatever_value"/>
 <frequencies state="on"/>
+```
+Hide kvm to prevent error 43:
+```conf
 <kvm>
   <hidden state="on"/>
 </kvm>
