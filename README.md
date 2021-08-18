@@ -45,7 +45,7 @@ cp -r hookscripts/ /etc/libvirt/hooks/qemu.d
 <synic state="on"/>
 <stimer state="on"/>
 <reset state="on"/>
-<vendor_id state="on" value="whatever_value"/>
+<vendor_id state="on" value="whatever"/>
 <frequencies state="on"/>
 ```
 Hide kvm to prevent error 43:
