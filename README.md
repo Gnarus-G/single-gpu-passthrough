@@ -1,12 +1,13 @@
 # single-gpu-passthrough
 
-### Use scripts
+### Setup scripts
 
 ```sh
 git clone git@github.com:Gnarus-G/single-gpu-passthrough.git
 cd single-gpu-passthrough;
 chmod +x kvmconf vbiospatch;
 chmod -R +x hookscripts;
+mv kvmconf vbiospatch ~/.local/bin/;
 ```
 
 ### IOMMU (AMD)
@@ -28,8 +29,14 @@ sudo chmod +x /etc/libvirt/hooks/qemu
 ### Place Hook scripts
 
 ```bash
+sudo kvmconf
+```
+
+```bash
 cp -r hookscripts/ /etc/libvirt/hooks/qemu.d
 ```
+
+**NOTE:** Rename the 'amd' or 'nvidia' folder to the VM's name;
 
 ### Hyper-V Elightenments
 
