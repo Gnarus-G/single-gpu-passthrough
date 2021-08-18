@@ -1,5 +1,11 @@
 # single-gpu-passthrough
 
+### IOMMU (AMD)
+```bash
+sudo vim /etc/default/grub
+```
+Add 'amd_iommu' like so - `GRUB_CMDLINE_LINUX_DEFAULT="... amd_iommu=on ..."`
+
 ### Hook Manager
  ```bash
 sudo wget 'https://raw.githubusercontent.com/PassthroughPOST/VFIO-Tools/master/libvirt_hooks/qemu' \
