@@ -20,7 +20,7 @@ Add 'amd_iommu' like so - `GRUB_CMDLINE_LINUX_DEFAULT="... amd_iommu=on ..."`.
 ```sh
 sudo dmesg | grep -i -e DMAR -e IOMMU
 ```
-Check that it worked
+To check that it worked
 
 ### Install Qemu and virt-manager
 ```sh
@@ -34,8 +34,8 @@ sudo systemctl enable virtlogd.socket --now
 ```
 Enable default libvirt network
 ```sh
-virsh net-autostart default
-virsh net-start default
+sudo virsh net-autostart default
+sudo virsh net-start default
 ```
 ### Hook Manager
 
