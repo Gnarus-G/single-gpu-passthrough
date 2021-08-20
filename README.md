@@ -48,10 +48,10 @@ sudo chmod +x /etc/libvirt/hooks/qemu
 ```
 
 ### Place Hook scripts
-
+Assuming the hookscripts directory is in $(pwd)
 ```bash
 sudo kvmconf
-cp -r hookscripts/ /etc/libvirt/hooks/qemu.d
+sudo cp -r hookscripts/ /etc/libvirt/hooks/qemu.d
 ```
 
 **NOTE:** Rename the 'amd' or 'nvidia' folder to the VM's name;
