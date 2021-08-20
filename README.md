@@ -3,7 +3,7 @@
 ### Setup scripts
 
 ```sh
-git clone git@github.com:Gnarus-G/single-gpu-passthrough.git
+git clone https://github.com/Gnarus-G/single-gpu-passthrough.git
 cd single-gpu-passthrough;
 chmod +x kvmconf vbiospatch;
 chmod -R +x hookscripts;
