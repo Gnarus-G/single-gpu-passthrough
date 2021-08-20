@@ -23,6 +23,16 @@ Add 'amd_iommu' like so - `GRUB_CMDLINE_LINUX_DEFAULT="... amd_iommu=on ..."`
 sudo pacman -S qemu libvirt edk2-ovmf virt-manager iptables-nft dnsmasq
 ```
 
+### Enable and start necessary services
+```sh
+sudo systemctl enable libvirtd.service --now
+sudo systemctl enable virtlogd.socket --now
+```
+Enable default libvirt network
+```sh
+virsh net-autostart default
+virsh net-start default
+```
 ### Hook Manager
 
 ```bash
