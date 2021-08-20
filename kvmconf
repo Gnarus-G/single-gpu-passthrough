@@ -1,8 +1,10 @@
 #!/bin/bash
 
+FILE=/etc/libvirt/hooks/kvm.conf
+
 print(){
-    echo VIRSH_GPU_VIDEO=pci_0000_$1_$2_0 > kvm.conf
-    echo VIRSH_GPU_AUDIO=pci_0000_$1_$2_1 >> kvm.conf
+    echo VIRSH_GPU_VIDEO=pci_0000_$1_$2_0 > $FILE
+    echo VIRSH_GPU_AUDIO=pci_0000_$1_$2_1 >> $FILE
 };
 
 PT1=$(lspci -nnk | grep VGA | grep -oP '\d+(?=:\d{2}(?=\.))');
