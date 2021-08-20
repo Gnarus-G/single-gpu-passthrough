@@ -49,9 +49,6 @@ sudo chmod +x /etc/libvirt/hooks/qemu
 
 ```bash
 sudo kvmconf
-```
-
-```bash
 cp -r hookscripts/ /etc/libvirt/hooks/qemu.d
 ```
 
