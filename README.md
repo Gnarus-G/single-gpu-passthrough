@@ -18,6 +18,11 @@ sudo vim /etc/default/grub
 
 Add 'amd_iommu' like so - `GRUB_CMDLINE_LINUX_DEFAULT="... amd_iommu=on ..."`
 
+### Install Qemu and virt-manager
+```sh
+sudo pacman -S qemu libvirt edk2-ovmf virt-manager iptables-nft dnsmasq
+```
+
 ### Hook Manager
 
 ```bash
