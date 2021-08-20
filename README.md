@@ -68,3 +68,4 @@ Hide kvm to prevent error 43:
 ```
 ### References
 Arch wiki: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Setting_up_an_OVMF-based_guest_VM
+SomeOrdinaryGamer: https://www.youtube.com/watch?v=BUSrdUoedTo
