@@ -17,10 +17,10 @@ sudo vim /etc/default/grub
 ```
 Add 'amd_iommu' like so - `GRUB_CMDLINE_LINUX_DEFAULT="... amd_iommu=on ..."`.  
 
-Check that it worked
 ```sh
 sudo dmesg | grep -i -e DMAR -e IOMMU
 ```
+Check that it worked
 
 ### Install Qemu and virt-manager
 ```sh
