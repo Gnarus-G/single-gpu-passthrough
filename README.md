@@ -37,6 +37,7 @@ cp -r hookscripts/ /etc/libvirt/hooks/qemu.d
 ```
 
 **NOTE:** Rename the 'amd' or 'nvidia' folder to the VM's name;
+The one to use depends on your gpu.
 
 ### Hyper-V Elightenments
 
@@ -60,3 +61,5 @@ Hide kvm to prevent error 43:
 ```conf
 <feature policy="require" name="topoext"/>
 ```
+### References
+Arch wiki: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Setting_up_an_OVMF-based_guest_VM
