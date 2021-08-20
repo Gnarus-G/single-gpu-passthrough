@@ -15,6 +15,10 @@ mv kvmconf vbiospatch ~/.local/bin/;
 ```bash
 sudo vim /etc/default/grub
 ```
+Check that it worked
+```sh
+dmesg | grep -i -e DMAR -e IOMMU
+```
 
 Add 'amd_iommu' like so - `GRUB_CMDLINE_LINUX_DEFAULT="... amd_iommu=on ..."`
 
