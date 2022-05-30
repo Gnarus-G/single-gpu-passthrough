@@ -81,4 +81,7 @@ Hide kvm to prevent error 43:
 ```
 ### References
 Arch wiki: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Setting_up_an_OVMF-based_guest_VM  
-SomeOrdinaryGamer: https://www.youtube.com/watch?v=BUSrdUoedTo
+SomeOrdinaryGamer: https://www.youtube.com/watch?v=BUSrdUoedTo  
+Reddit: 
+- https://www.reddit.com/r/VFIO/comments/t5h0r4/single_gpusingle_nvme_passhthrough_endeavouros/
+- https://www.reddit.com/r/VFIO/comments/rp0vbi/single_gpu_guides_need_to_stop_putting_forbidden/
