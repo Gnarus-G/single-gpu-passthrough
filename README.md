@@ -67,7 +67,7 @@ The one to use depends on your gpu.
 <vendor_id state="on" value="whatever"/>
 <frequencies state="on"/>
 ```
-Hide kvm to prevent error 43:
+Hide kvm to prevent weird bugs like not being able to change the display orientation:
 ```conf
 <kvm>
   <hidden state="on"/>
