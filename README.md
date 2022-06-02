@@ -58,7 +58,7 @@ sudo cp -r hookscripts/ /etc/libvirt/hooks/qemu.d
 The one to use depends on your gpu.
 
 ### Hyper-V Elightenments
-
+setting vendor_id as below helps prevent weird bugs like not being able to change the display orientation:
 ```conf
 <vpindex state="on"/>
 <synic state="on"/>
@@ -67,7 +67,7 @@ The one to use depends on your gpu.
 <vendor_id state="on" value="whatever"/>
 <frequencies state="on"/>
 ```
-Hide kvm to prevent weird bugs like not being able to change the display orientation:
+Hide kvm to prevent error 43:
 ```conf
 <kvm>
   <hidden state="on"/>
