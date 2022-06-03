@@ -58,6 +58,7 @@ sudo cp -r hookscripts/ /etc/libvirt/hooks/qemu.d
 The one to use depends on your gpu.
 
 ### Hyper-V Elightenments
+within the <hyperv/> tags
 setting vendor_id as below helps prevent weird bugs like not being able to change the display orientation:
 ```conf
 <vpindex state="on"/>
@@ -75,9 +76,29 @@ Hide kvm to prevent error 43:
 ```
 
 ### Enabling SMT Performance (for AMD Ryzen CPUs)
-
+Withing the <cpu/> tags
 ```conf
 <feature policy="require" name="topoext"/>
+```
+### Pin all cpu's for much better performance
+```
+<cputune>
+    <vcpupin vcpu="0" cpuset="0"/>
+    <vcpupin vcpu="1" cpuset="1"/>
+    <vcpupin vcpu="2" cpuset="2"/>
+    <vcpupin vcpu="3" cpuset="3"/>
+    <vcpupin vcpu="4" cpuset="4"/>
+    <vcpupin vcpu="5" cpuset="5"/>
+    <vcpupin vcpu="6" cpuset="6"/>
+    <vcpupin vcpu="7" cpuset="7"/>
+    <vcpupin vcpu="8" cpuset="8"/>
+    <vcpupin vcpu="9" cpuset="9"/>
+    <vcpupin vcpu="10" cpuset="10"/>
+    <vcpupin vcpu="12" cpuset="12"/>
+    <vcpupin vcpu="13" cpuset="13"/>
+    <vcpupin vcpu="14" cpuset="14"/>
+    <vcpupin vcpu="15" cpuset="15"/>
+</cputune>
 ```
 ### References
 Arch wiki: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Setting_up_an_OVMF-based_guest_VM  
