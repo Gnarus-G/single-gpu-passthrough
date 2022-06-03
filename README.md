@@ -94,6 +94,7 @@ Withing the <cpu/> tags
     <vcpupin vcpu="8" cpuset="8"/>
     <vcpupin vcpu="9" cpuset="9"/>
     <vcpupin vcpu="10" cpuset="10"/>
+    <vcpupin vcpu="11" cpuset="11"/>
     <vcpupin vcpu="12" cpuset="12"/>
     <vcpupin vcpu="13" cpuset="13"/>
     <vcpupin vcpu="14" cpuset="14"/>
