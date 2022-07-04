@@ -5,10 +5,10 @@
 ```sh
 git clone https://github.com/Gnarus-G/single-gpu-passthrough.git
 cd single-gpu-passthrough;
-chmod +x kvmconf vbiospatch;
+chmod +x kvmconf;
 chmod -R +x hookscripts;
 mkdir ~/.local/bin;
-mv kvmconf vbiospatch ~/.local/bin/;
+mv kvmconf ~/.local/bin/;
 ```
 
 ### IOMMU (AMD)
