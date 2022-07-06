@@ -25,7 +25,7 @@ To check that it worked
 
 ### Install Qemu and virt-manager
 ```sh
-sudo pacman -S qemu libvirt edk2-ovmf virt-manager iptables-nft dnsmasq
+sudo pacman -S qemu-desktop libvirt edk2-ovmf virt-manager iptables-nft dnsmasq
 ```
 
 ### Enable and start necessary services
