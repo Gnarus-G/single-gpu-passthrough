@@ -106,4 +106,7 @@ Arch wiki: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Setting_up_
 SomeOrdinaryGamer: https://www.youtube.com/watch?v=BUSrdUoedTo  
 Reddit: 
 - https://www.reddit.com/r/VFIO/comments/t5h0r4/single_gpusingle_nvme_passhthrough_endeavouros/
-- https://www.reddit.com/r/VFIO/comments/rp0vbi/single_gpu_guides_need_to_stop_putting_forbidden/
+- https://www.reddit.com/r/VFIO/comments/rp0vbi/single_gpu_guides_need_to_stop_putting_forbidden/    
+
+Other Guides:
+- https://github.com/QaidVoid/Complete-Single-GPU-Passthrough
