@@ -16,12 +16,21 @@ mv kvmconf ~/.local/bin/;
 ```bash
 sudo vim /etc/default/grub
 ```
-Add 'amd_iommu' like so - `GRUB_CMDLINE_LINUX_DEFAULT="... amd_iommu=on ..."`.  
+Add 'amd_iommu' like so - `GRUB_CMDLINE_LINUX_DEFAULT="... amd_iommu=on iommu=pt iommu=1..."`.  
 
 ```sh
 sudo dmesg | grep -i -e DMAR -e IOMMU
 ```
 To check that it worked
+
+### VFIO
+```bash
+sudo nvim /etc/dracut.conf.d/local.conf
+```
+write therein: add_drivers+=" vfio vfio_iommu_type1 vfio-pci vfio-virqfd "
+```bash
+sudo dracut -f --kver `uname -r`
+```
 
 ### Install Qemu and virt-manager
 ```sh
