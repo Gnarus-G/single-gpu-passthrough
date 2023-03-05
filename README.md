@@ -47,6 +47,12 @@ Enable default libvirt network
 sudo virsh net-autostart default
 sudo virsh net-start default
 ```
+
+### Add user to groups
+```bash
+sudo usermod -aG libvirt,kvm,input $USER
+```
+
 ### Hook Manager
 
 ```bash
