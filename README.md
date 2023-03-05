@@ -110,3 +110,4 @@ Reddit:
 
 Other Guides:
 - https://github.com/QaidVoid/Complete-Single-GPU-Passthrough
+- https://youtu.be/eTWf5D092VY
