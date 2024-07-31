@@ -16,39 +16,49 @@ mv kvmconf ~/.local/bin/;
 ```bash
 sudo vim /etc/default/grub
 ```
-Add 'amd_iommu' like so - `GRUB_CMDLINE_LINUX_DEFAULT="... amd_iommu=on iommu=pt iommu=1..."`.  
+
+Add 'amd_iommu' like so - `GRUB_CMDLINE_LINUX_DEFAULT="... amd_iommu=on iommu=pt iommu=1..."`.
 
 ```sh
 sudo dmesg | grep -i -e DMAR -e IOMMU
 ```
+
 To check that it worked
 
 ### VFIO
+
 ```bash
 sudo nvim /etc/dracut.conf.d/local.conf
 ```
+
 write therein: add_drivers+=" vfio vfio_iommu_type1 vfio-pci vfio-virqfd "
+
 ```bash
 sudo dracut -f --kver `uname -r`
 ```
 
 ### Install Qemu and virt-manager
+
 ```sh
 sudo pacman -S qemu-desktop libvirt edk2-ovmf virt-manager iptables-nft dnsmasq
 ```
 
 ### Enable and start necessary services
+
 ```sh
 sudo systemctl enable libvirtd.service --now
 sudo systemctl enable virtlogd.socket --now
 ```
+
 Enable default libvirt network
+
 ```sh
 sudo virsh net-autostart default
 sudo virsh net-start default
 ```
 
 ### Add user to groups
+
 ```bash
 sudo usermod -aG libvirt,kvm,input $USER
 ```
@@ -63,19 +73,25 @@ sudo chmod +x /etc/libvirt/hooks/qemu
 ```
 
 ### Place Hook scripts
+
 Assuming the hookscripts directory is in $(pwd)
+
 ```bash
 sudo kvmconf
-sudo cp -r hookscripts/ /etc/libvirt/hooks/qemu.d
+sudo cp -r hookscripts/* /etc/libvirt/hooks/qemu.d
+sudo touch /etc/libvirt/hooks/qemu.d/begin_std_err.log
+sudo touch /etc/libvirt/hooks/qemu.d/end_std_err.log
 ```
 
 **NOTE:** Rename the 'amd' or 'nvidia' folder to the VM's name;
 The one to use depends on your gpu.
 
 ### Hyper-V Elightenments
-within the <hyperv/> tags
+
+within the <hyperv/> tags, under <features/>
 setting vendor_id as below helps prevent weird bugs like not being able to change the display orientation:
-```conf
+
+```xml
 <vpindex state="on"/>
 <synic state="on"/>
 <stimer state="on"/>
@@ -83,20 +99,27 @@ setting vendor_id as below helps prevent weird bugs like not being able to chang
 <vendor_id state="on" value="whatever"/>
 <frequencies state="on"/>
 ```
+
 Hide kvm to prevent error 43:
-```conf
+under <features/>
+
+```xml
 <kvm>
   <hidden state="on"/>
 </kvm>
 ```
 
 ### Enabling SMT Performance (for AMD Ryzen CPUs)
+
 Withing the <cpu/> tags
-```conf
+
+```xml
 <feature policy="require" name="topoext"/>
 ```
+
 ### Pin all cpu's for much better performance
-```
+
+```xml
 <cputune>
     <vcpupin vcpu="0" cpuset="0"/>
     <vcpupin vcpu="1" cpuset="1"/>
@@ -116,13 +139,17 @@ Withing the <cpu/> tags
     <vcpupin vcpu="15" cpuset="15"/>
 </cputune>
 ```
+
 ### References
+
 Arch wiki: https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Setting_up_an_OVMF-based_guest_VM  
 SomeOrdinaryGamer: https://www.youtube.com/watch?v=BUSrdUoedTo  
-Reddit: 
+Reddit:
+
 - https://www.reddit.com/r/VFIO/comments/t5h0r4/single_gpusingle_nvme_passhthrough_endeavouros/
-- https://www.reddit.com/r/VFIO/comments/rp0vbi/single_gpu_guides_need_to_stop_putting_forbidden/    
+- https://www.reddit.com/r/VFIO/comments/rp0vbi/single_gpu_guides_need_to_stop_putting_forbidden/
 
 Other Guides:
+
 - https://github.com/QaidVoid/Complete-Single-GPU-Passthrough
 - https://youtu.be/eTWf5D092VY
