@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+# Native libvirt QEMU hook: /etc/libvirt/hooks/qemu.d/50-single-gpu
+# Libvirt supplies: guest-name operation sub-operation extra
+set -u
+
+(( $# >= 3 )) || exit 0
+
+case "$2:$3" in
+  prepare:begin | release:end) ;;
+  *) exit 0 ;;
+esac
+
+config_file=${SINGLE_GPU_CONFIG:-/etc/libvirt/hooks/single-gpu.conf}
+if [[ ! -r $config_file ]]; then
+  printf 'single-gpu: missing configuration: %s\n' "$config_file" >&2
+  exit 1
+fi
+
+# This file is installed as root and contains VM_NAME and DISPLAY_MANAGER.
+# shellcheck disable=SC1091
+if ! source "$config_file"; then
+  printf 'single-gpu: failed to load configuration: %s\n' "$config_file" >&2
+  exit 1
+fi
+
+if [[ -z ${VM_NAME:-} || -z ${DISPLAY_MANAGER:-} ]]; then
+  printf 'single-gpu: set VM_NAME and DISPLAY_MANAGER in %s\n' "$config_file" >&2
+  exit 1
+fi
+
+[[ $1 == "$VM_NAME" ]] || exit 0
+
+case "$2:$3" in
+  prepare:begin)
+    # Runs before libvirt detaches managed PCI hostdevs.
+    systemctl stop "$DISPLAY_MANAGER"
+    ;;
+  release:end)
+    # Runs after libvirt reattaches managed PCI hostdevs.
+    systemctl start "$DISPLAY_MANAGER"
+    ;;
+esac

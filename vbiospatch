@@ -1,18 +1,75 @@
-#!/bin/bash
-lspci -nnk | grep VGA
+#!/usr/bin/env bash
+# Dump a PCI device's ROM without overwriting an existing dump.
+set -euo pipefail
 
-id=$(lspci -nnk | grep VGA | grep -oP '(\d+:\d+\.\d)');
+if (( $# != 2 )); then
+  printf 'Usage: sudo %s PCI_ADDRESS OUTPUT_FILE\n' "${0##*/}" >&2
+  printf 'Example: sudo %s 0000:01:00.0 ./gpu.rom\n' "${0##*/}" >&2
+  exit 2
+fi
 
-echo $id
+if (( EUID != 0 )); then
+  printf 'Run this script as root; writing the PCI ROM control requires it.\n' >&2
+  exit 1
+fi
 
-read -p "Enter the filename (to save as): " fname
+pci_address=$1
+output=$2
 
-DEVICE_ROM=/sys/bus/pci/devices/0000:$id/rom
-FILE_NAME=~/.local/share/vgabios/$fname.rom
+if [[ ! $pci_address =~ ^[[:xdigit:]]{4}:[[:xdigit:]]{2}:[[:xdigit:]]{2}\.[[:xdigit:]]$ ]]; then
+  printf 'Invalid PCI address: %s (expected DDDD:BB:SS.F)\n' "$pci_address" >&2
+  exit 2
+fi
 
-echo ...getting rom from $DEVICE_ROM
-echo ...to save as $FILE_NAME
+device=/sys/bus/pci/devices/$pci_address
+rom=$device/rom
 
-echo 1 | sudo tee $DEVICE_ROM
-sudo cat $DEVICE_ROM > $FILE_NAME
-echo 0 | sudo tee $DEVICE_ROM
+if [[ ! -d $device || ! -f $rom ]]; then
+  printf 'No ROM control found for PCI device %s.\n' "$pci_address" >&2
+  exit 1
+fi
+
+if [[ -e $output || -L $output ]]; then
+  printf 'Refusing to overwrite existing file: %s\n' "$output" >&2
+  exit 1
+fi
+
+output_dir=$(dirname -- "$output")
+if [[ ! -d $output_dir ]]; then
+  printf 'Output directory does not exist: %s\n' "$output_dir" >&2
+  exit 1
+fi
+
+complete=0
+cleanup() {
+  local status=$?
+  if ! printf '0\n' > "$rom"; then
+    printf 'Warning: failed to restore the ROM control for %s.\n' "$pci_address" >&2
+  fi
+  if (( complete == 0 )) && ! rm -f -- "$output"; then
+    printf 'Warning: incomplete output remains at %s.\n' "$output" >&2
+  fi
+  return "$status"
+}
+trap cleanup EXIT
+
+printf '1\n' > "$rom"
+cat -- "$rom" > "$output"
+
+expected_size=$(stat -c %s -- "$rom")
+actual_size=$(stat -c %s -- "$output")
+if (( expected_size == 0 )); then
+  printf 'The kernel reports a zero-sized ROM for %s.\n' "$pci_address" >&2
+  exit 1
+fi
+if (( actual_size != expected_size )); then
+  printf 'Incomplete ROM dump: expected %s bytes, got %s.\n' \
+    "$expected_size" "$actual_size" >&2
+  exit 1
+fi
+
+printf '0\n' > "$rom"
+complete=1
+trap - EXIT
+
+printf 'Saved %s ROM (%s bytes) to %s\n' "$pci_address" "$actual_size" "$output"
