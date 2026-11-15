@@ -188,7 +188,20 @@ Set:
 ```bash
 VM_NAME="win11"
 DISPLAY_MANAGER="display-manager.service"
+GPU_PCI_ADDRESS="0000:01:00.0"
+GPU_READY_TIMEOUT=10
+REQUIRED_UNMOUNTED_DISKS=()
 ```
+
+`GPU_PCI_ADDRESS` enables a bounded wait for that GPU's own DRM device after libvirt reattaches it. On timeout, the hook still tries to restart the display manager and returns an error so libvirt logs the readiness failure. Set it to an empty string to skip the wait.
+
+For a guest that boots an entire physical disk, add its stable `/dev/disk/by-id/` path to `REQUIRED_UNMOUNTED_DISKS`. The hook then rejects startup **before stopping the display manager** if any partition of that disk is mounted on the host. For example:
+
+```bash
+REQUIRED_UNMOUNTED_DISKS=("/dev/disk/by-id/replace-with-your-disk-id")
+```
+
+Unmount all host partitions of that disk before every launch. Never let the host and guest write to the same mounted filesystem concurrently.
 
 Use the exact domain name from `virsh list --all`. Check the display-manager alias with:
 
@@ -216,7 +229,9 @@ virsh --connect qemu:///system start win11
 
 The host display should turn off and the guest should appear on the monitor attached to the passed-through GPU. Shut down the guest normally to reattach the GPU and restart the host display manager.
 
-Avoid `virsh destroy` except as a forced power-off; it can lose guest data. Do not manually rebind the GPU while QEMU is still running. If libvirtd or the host itself crashes, the release hook cannot be guaranteed to run, so recover through SSH or another console before trying again.
+Libvirt normally invokes `release end` even when preparation or QEMU launch fails, allowing this hook to restart the display manager after the managed devices are restored. This is not guaranteed if libvirtd is killed, the host crashes, or power is lost. In those cases, use SSH or another VT and run `sudo systemctl start display-manager.service` after confirming that QEMU is no longer using the GPU.
+
+Avoid `virsh destroy` except as a forced power-off; it can lose guest data. Do not manually rebind the GPU while QEMU is still running.
 
 ## CPU and guest compatibility settings
 
@@ -267,7 +282,7 @@ systemctl status display-manager.service
 sudo systemctl restart display-manager.service
 ```
 
-Check that all GPU hostdevs still have `managed='yes'`. Also check whether the display manager started before the GPU driver and DRM device were fully ready; a host-specific bounded readiness wait may be needed in the release hook.
+Check that all GPU hostdevs still have `managed='yes'`. If `GPU_PCI_ADDRESS` is configured, the hook waits up to `GPU_READY_TIMEOUT` seconds for the matching DRM device and then attempts display-manager recovery even on timeout. Increase that timeout only if the logs show a slow but otherwise successful GPU reattachment.
 
 For hook installation problems, verify that the file is executable and was present when the relevant libvirt daemon started:
 

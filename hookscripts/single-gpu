@@ -17,7 +17,12 @@ if [[ ! -r $config_file ]]; then
   exit 1
 fi
 
-# This file is installed as root and contains VM_NAME and DISPLAY_MANAGER.
+GPU_PCI_ADDRESS=
+GPU_READY_TIMEOUT=10
+REQUIRED_UNMOUNTED_DISKS=()
+
+# This root-owned file can override the defaults above and must define
+# VM_NAME and DISPLAY_MANAGER.
 # shellcheck disable=SC1091
 if ! source "$config_file"; then
   printf 'single-gpu: failed to load configuration: %s\n' "$config_file" >&2
@@ -31,13 +36,65 @@ fi
 
 [[ $1 == "$VM_NAME" ]] || exit 0
 
+check_unmounted_disks() {
+  local disk mounts
+
+  for disk in "${REQUIRED_UNMOUNTED_DISKS[@]}"; do
+    if [[ ! -b $disk ]]; then
+      printf 'single-gpu: required disk is missing: %s\n' "$disk" >&2
+      return 1
+    fi
+    if ! mounts=$(lsblk -nrpo MOUNTPOINT "$disk"); then
+      printf 'single-gpu: cannot inspect mounts for disk: %s\n' "$disk" >&2
+      return 1
+    fi
+    if grep -q '[^[:space:]]' <<< "$mounts"; then
+      printf 'single-gpu: unmount every partition of %s before starting %s:\n' \
+        "$disk" "$VM_NAME" >&2
+      lsblk -o NAME,MOUNTPOINT "$disk" >&2
+      return 1
+    fi
+  done
+}
+
+wait_for_gpu() {
+  [[ -n $GPU_PCI_ADDRESS ]] || return 0
+
+  if [[ ! $GPU_READY_TIMEOUT =~ ^[0-9]+$ ]]; then
+    printf 'single-gpu: GPU_READY_TIMEOUT must be a non-negative integer\n' >&2
+    return 1
+  fi
+
+  local deadline=$((SECONDS + GPU_READY_TIMEOUT))
+  local card
+  while (( SECONDS <= deadline )); do
+    for card in "/sys/bus/pci/devices/$GPU_PCI_ADDRESS/drm/card"*; do
+      [[ -e $card ]] || continue
+      [[ -e /dev/dri/${card##*/} ]] && return 0
+    done
+    (( SECONDS < deadline )) || break
+    sleep 0.2
+  done
+
+  printf 'single-gpu: GPU %s was not DRM-ready within %ss; trying the display manager anyway\n' \
+    "$GPU_PCI_ADDRESS" "$GPU_READY_TIMEOUT" >&2
+  return 1
+}
+
 case "$2:$3" in
   prepare:begin)
+    # Fail before disturbing the graphical session if a raw guest disk is mounted.
+    check_unmounted_disks || exit 1
     # Runs before libvirt detaches managed PCI hostdevs.
     systemctl stop "$DISPLAY_MANAGER"
     ;;
   release:end)
-    # Runs after libvirt reattaches managed PCI hostdevs.
+    # Libvirt has reattached managed PCI hostdevs, but udev/DRM may still be settling.
+    gpu_ready=0
+    wait_for_gpu || gpu_ready=1
     systemctl start "$DISPLAY_MANAGER"
+    display_status=$?
+    (( gpu_ready == 0 )) || exit "$gpu_ready"
+    exit "$display_status"
     ;;
 esac
